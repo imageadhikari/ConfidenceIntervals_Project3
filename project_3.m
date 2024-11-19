@@ -7,21 +7,17 @@ function project_3(methods, dist_type)
         dist_type = 'all'; % Default to run all distributions if none specified
     end
 
-    % Define common variables
     x_values = [10, 100, 500, 1000, 5000, 10000];
     num_samples = 10000;
 
-    % Parameters for distributions
     bernoulli_means = [0.01, 0.5, 0.99];
     uniform_bounds = [0, 0.3; 0.3, 0.7; 0.7, 1];
 
-    % Open CSV file for results
     try
         csv_file = 'results.csv';
         fd = fopen(csv_file, 'w');
         fprintf(fd, 'ci_method,distribution,N,percent_missed,param_info\n');
 
-        % Loop through all selected methods
         for k = methods
             % Loop through Bernoulli distribution if applicable
             if strcmp(dist_type, 'bernoulli') || strcmp(dist_type, 'all')
@@ -40,7 +36,6 @@ function project_3(methods, dist_type)
                 end
             end
 
-            % Loop through Uniform distribution if applicable
             if strcmp(dist_type, 'uniform') || strcmp(dist_type, 'all')
                 for bounds = uniform_bounds'
                     lower = bounds(1);
@@ -53,13 +48,11 @@ function project_3(methods, dist_type)
                         fprintf(fd, '%u,uniform,%u,%g,[%g,%g]\n', k, x_values(i), y_values(i), lower, upper);
                     end
 
-                    % Plot results
                     plot_results(x_values, y_values, sprintf('Uniform (bounds = [%.2f, %.2f]), CI Method %u', lower, upper, k), ...
                         sprintf('Uniform_bounds_[%.2f_%.2f]_%u.png', lower, upper, k));
                 end
             end
 
-            % Loop through Noisy distribution if applicable
             if strcmp(dist_type, 'noisy') || strcmp(dist_type, 'all')
                 y_values = zeros(size(x_values));
                 for i = 1:length(x_values)
@@ -69,7 +62,6 @@ function project_3(methods, dist_type)
                     fprintf(fd, '%u,noisy,%u,%g\n', k, x_values(i), y_values(i));
                 end
 
-                % Plot results
                 plot_results(x_values, y_values, sprintf('Noisy Distribution, CI Method %u', k), ...
                     sprintf('Noisy_%u.png', k));
             end
@@ -89,7 +81,6 @@ function plot_results(x_values, y_values, title_str, filename)
     title(title_str);
     grid on;
 
-    % Adjust x-axis to include specific ticks
     xticks([10, 100, 500, 1000, 5000, 10000]);
     xtickformat('%,.0f');
     saveas(gcf, filename);
