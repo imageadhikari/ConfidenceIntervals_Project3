@@ -1,20 +1,14 @@
-function [ samples, true_mean ] = generate_samples(dist_type, n, m, varargin)
-    % Generates an n x m matrix of samples from a specified distribution,
-    % ensuring all values are within [0, 1] without distorting the distribution's statistics.
+function [samples, true_mean] = generate_samples(dist_type, n, m, varargin)
+    % Generates an n x m matrix of samples from a specified distribution.
     %
     % Parameters:
-    %   dist_type (string): The type of distribution ("bernoulli", "uniform", etc.).
+    %   dist_type (string): The type of distribution ("bernoulli", "uniform", "noisy").
     %   n, m (int): Dimensions of the output matrix.
-    %   varargin: Additional optional arguments:
-    %       - For "bernoulli": probability of success (default: 0.5)
-    %       - For "uniform": lower and upper bounds (default: 0, 1)
+    %   varargin: Additional optional arguments.
     %
     % Returns:
-    %   samples (matrix): An n x m matrix of random samples in [0, 1].
-    %
-    % Supported distributions:
-    %   - "bernoulli": Binary values (0 or 1) with specified success probability.
-    %   - "uniform": Continuous values within specified range.
+    %   samples (matrix): An n x m matrix of random samples.
+    %   true_mean: The true mean of the distribution.
 
     switch dist_type
         case 'bernoulli'
@@ -34,14 +28,13 @@ function [ samples, true_mean ] = generate_samples(dist_type, n, m, varargin)
             if numel(varargin) >= 2
                 upper = varargin{2};
             end
-            if lower < 0 || upper > 1
-                error('Uniform bounds must be within [0, 1].');
-            end
             samples = lower + (upper - lower) * rand(n, m);
             true_mean = (lower + upper) / 2;
 
+        case 'noisy'
+            [samples, true_mean] = sample_noisy_dataset(n, m);
+
         otherwise
-            error('Unsupported distribution type: %s. Supported types: "bernoulli", "uniform", "normal".', dist_type);
+            error('Unsupported distribution type: %s. Supported types: "bernoulli", "uniform", "noisy".', dist_type);
     end
 end
-
